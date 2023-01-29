@@ -76,7 +76,7 @@ mod tests_apply_filter {
     }
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum EitherOrBoth {
     Both(PathBuf, PathBuf),
     Left(PathBuf),
@@ -302,7 +302,7 @@ pub struct Options {
     pub filter: Option<Filter>,
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum FileCompResult {
     Equal,
     Different,

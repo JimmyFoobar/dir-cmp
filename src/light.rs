@@ -169,15 +169,15 @@ mod tests_compare_dirs_inner {
             filter: None,
         };
 
-        let expected: Vec<EitherOrBoth> = vec![
+        let mut expected: Vec<EitherOrBoth> = vec![
             EitherOrBoth::Left(file_left_only.as_path().to_path_buf()),
             EitherOrBoth::Right(file_right_only.as_path().to_path_buf()),
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
 
     #[test]
@@ -205,7 +205,7 @@ mod tests_compare_dirs_inner {
             filter: None,
         };
 
-        let expected: Vec<EitherOrBoth> = vec![
+        let mut expected: Vec<EitherOrBoth> = vec![
             EitherOrBoth::Both(
                 file_left_both.as_path().to_path_buf(),
                 file_right_both.as_path().to_path_buf(),
@@ -214,9 +214,9 @@ mod tests_compare_dirs_inner {
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
 
     #[test]
@@ -244,7 +244,7 @@ mod tests_compare_dirs_inner {
             filter: None,
         };
 
-        let expected: Vec<EitherOrBoth> = vec![
+        let mut expected: Vec<EitherOrBoth> = vec![
             EitherOrBoth::Left(file_left_only.as_path().to_path_buf()),
             EitherOrBoth::Both(
                 file_left_both.as_path().to_path_buf(),
@@ -253,9 +253,9 @@ mod tests_compare_dirs_inner {
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
 }
 

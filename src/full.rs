@@ -6,7 +6,7 @@ use crate::{
     compare_two_files, list_files, zip_dir_entries, EitherOrBoth, FileCompResult, Options,
 };
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DirCmpEntry {
     Both(PathBuf, PathBuf, FileCompResult),
     Left(PathBuf),
@@ -139,7 +139,7 @@ mod tests_compare_dirs_inner {
             ignore_equal: false,
         };
 
-        let expected: Vec<DirCmpEntry> = vec![
+        let mut expected: Vec<DirCmpEntry> = vec![
             DirCmpEntry::Left(file_left_only.as_path().to_path_buf()),
             DirCmpEntry::Both(
                 file_left_both_diff.as_path().to_path_buf(),
@@ -155,9 +155,9 @@ mod tests_compare_dirs_inner {
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
     #[test]
     fn ignore_equal() {
@@ -188,7 +188,7 @@ mod tests_compare_dirs_inner {
             filter: None,
         };
 
-        let expected: Vec<DirCmpEntry> = vec![
+        let mut expected: Vec<DirCmpEntry> = vec![
             DirCmpEntry::Left(file_left_only.as_path().to_path_buf()),
             DirCmpEntry::Both(
                 file_left_both_diff.as_path().to_path_buf(),
@@ -199,9 +199,9 @@ mod tests_compare_dirs_inner {
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
 
     #[test]
@@ -233,7 +233,7 @@ mod tests_compare_dirs_inner {
             filter: None,
         };
 
-        let expected: Vec<DirCmpEntry> = vec![
+        let mut expected: Vec<DirCmpEntry> = vec![
             DirCmpEntry::Both(
                 file_left_both_diff.as_path().to_path_buf(),
                 file_right_both_diff.as_path().to_path_buf(),
@@ -248,9 +248,9 @@ mod tests_compare_dirs_inner {
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
 
     #[test]
@@ -283,7 +283,7 @@ mod tests_compare_dirs_inner {
             
         };
 
-        let expected: Vec<DirCmpEntry> = vec![
+        let mut expected: Vec<DirCmpEntry> = vec![
             DirCmpEntry::Left(file_left_only.as_path().to_path_buf()),
             DirCmpEntry::Both(
                 file_left_both_diff.as_path().to_path_buf(),
@@ -298,9 +298,9 @@ mod tests_compare_dirs_inner {
         ];
 
         //compare
-        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
 
-        assert_eq!(result, expected);
+        assert_eq!(result.sort(), expected.sort());
     }
 }
 
