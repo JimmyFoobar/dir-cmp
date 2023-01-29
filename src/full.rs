@@ -37,7 +37,6 @@ fn compare_dirs_inner(
     )? {
         match dir_entry {
             EitherOrBoth::Both(left_entry, right_entry) => {
-                
                 //handle two files
                 if left_entry.is_file() && right_entry.is_file() {
                     let comp_result = compare_two_files(&left_entry, &right_entry)?;
@@ -65,7 +64,7 @@ fn compare_dirs_inner(
                 //ignore symlinks and mismatches s
             }
             EitherOrBoth::Left(left_entry) => {
-                if !options.ignore_left_only{
+                if !options.ignore_left_only {
                     if left_entry.is_dir() {
                         let entry_list = list_files(&left_entry);
                         for file_path in entry_list {
@@ -84,7 +83,7 @@ fn compare_dirs_inner(
                 }
             }
             EitherOrBoth::Right(right_entry) => {
-                if !options.ignore_right_only{
+                if !options.ignore_right_only {
                     if right_entry.is_dir() {
                         let entry_list = list_files(&right_entry);
                         for file_path in entry_list {
@@ -100,7 +99,7 @@ fn compare_dirs_inner(
                         //ignore
                         continue;
                     }
-                } 
+                }
             }
         }
     }
