@@ -1,5 +1,5 @@
 # dir-cmp
-This Rust library aims to provide convient functions to compare to two files trees.
+This Rust library aims to provide convient functions to compare to two file trees.
 
 ## Usage
 ```rust
