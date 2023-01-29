@@ -3,14 +3,14 @@ use log::{debug, error, trace};
 use std::io;
 use std::path::Path;
 
-use crate::{list_files, zip_dir_entries, EitherOrBoth, Filter};
+use crate::{list_files, zip_dir_entries, EitherOrBoth, Options};
 
 fn compare_dirs_inner(
     left_path: &Path,
     right_path: &Path,
     left_base: &str,
     right_base: &str,
-    filter: &Option<Filter>,
+    options: &Options,
 ) -> io::Result<Vec<EitherOrBoth>> {
     trace!("comparing 2 dirs");
 
@@ -20,7 +20,7 @@ fn compare_dirs_inner(
         &right_path.to_path_buf(),
         left_base,
         right_base,
-        filter,
+        &options.filter,
     )? {
         match dir_entry {
             EitherOrBoth::Both(left_entry, right_entry) => {
@@ -31,7 +31,7 @@ fn compare_dirs_inner(
                     right_entry.as_path(),
                     left_base,
                     right_base,
-                    filter,
+                    options,
                 )?;
                 results.extend(subtree_results);
             }
@@ -79,7 +79,7 @@ fn compare_dirs_inner(
 pub fn compare_dirs(
     left_path: &Path,
     right_path: &Path,
-    filter: Option<Filter>,
+    options: Options,
 ) -> io::Result<Vec<EitherOrBoth>> {
     debug!(
         "starting to compare for {:?} vs {:?}",
@@ -109,5 +109,5 @@ pub fn compare_dirs(
     let left_base = left_path.to_str().unwrap();
     let right_base = right_path.to_str().unwrap();
 
-    compare_dirs_inner(left_path, right_path, left_base, right_base, &filter)
+    compare_dirs_inner(left_path, right_path, left_base, right_base, &options)
 }
