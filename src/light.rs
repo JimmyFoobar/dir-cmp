@@ -34,7 +34,7 @@ fn compare_dirs_inner(
                             right_entry.as_path(),
                             left_base,
                             right_base,
-                            &options,
+                            options,
                         )?;
                         results.extend(subtree_results);
                     }

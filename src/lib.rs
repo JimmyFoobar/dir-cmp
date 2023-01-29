@@ -112,11 +112,11 @@ fn zip_dir_entries(
 
     for left_entry in &left_entries {
         //debug!("left entry: {:?}", left_entry);
-        let left_short_path = left_entry.strip_prefix(&left_base).unwrap();
-        if !apply_filter(left_short_path.to_str().unwrap(), &filter) {
+        let left_short_path = left_entry.strip_prefix(left_base).unwrap();
+        if !apply_filter(left_short_path.to_str().unwrap(), filter) {
             let mut found_match = None;
             for right_entry in &right_entries {
-                let right_short_path = right_entry.strip_prefix(&right_base).unwrap();
+                let right_short_path = right_entry.strip_prefix(right_base).unwrap();
                 if left_short_path == right_short_path {
                     found_match = Some(EitherOrBoth::Both(
                         left_entry.to_owned(),
@@ -133,8 +133,8 @@ fn zip_dir_entries(
     }
 
     for right_entry in &right_entries {
-        let right_short_path = right_entry.strip_prefix(&right_base).unwrap();
-        if !apply_filter(right_short_path.to_str().unwrap(), &filter) {
+        let right_short_path = right_entry.strip_prefix(right_base).unwrap();
+        if !apply_filter(right_short_path.to_str().unwrap(), filter) {
             let mut found_match = None;
             for left_entry in &left_entries {
                 let left_parent = left_entry.as_path().parent().unwrap().display().to_string();
@@ -144,7 +144,7 @@ fn zip_dir_entries(
                 }
             }
 
-            if found_match == None {
+            if found_match.is_none() {
                 results.push(EitherOrBoth::Right(right_entry.to_owned()));
             }
         }
