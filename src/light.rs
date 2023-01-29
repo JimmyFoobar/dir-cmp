@@ -24,56 +24,239 @@ fn compare_dirs_inner(
     )? {
         match dir_entry {
             EitherOrBoth::Both(left_entry, right_entry) => {
-                trace!("left and right dir have the same entry");
+                trace!("handling EitherOrBoth::Both");
                 debug!("comparing{:?} vs {:?}", left_entry, right_entry);
-                let subtree_results = compare_dirs_inner(
-                    left_entry.as_path(),
-                    right_entry.as_path(),
-                    left_base,
-                    right_base,
-                    options,
-                )?;
-                results.extend(subtree_results);
+                if !options.ignore_equal {
+                    if left_entry.is_dir() && right_entry.is_dir() {
+                        //handle two dirs
+                        let subtree_results = compare_dirs_inner(
+                            left_entry.as_path(),
+                            right_entry.as_path(),
+                            left_base,
+                            right_base,
+                            &options,
+                        )?;
+                        results.extend(subtree_results);
+                    }
+
+                    //handle two files
+                    if left_entry.is_file() && right_entry.is_file() {
+                        results.push(EitherOrBoth::Both(
+                            left_entry.to_owned(),
+                            right_entry.to_owned(),
+                        ));
+                    }
+
+                    //ignore symlinks and mismatches
+                }
             }
             EitherOrBoth::Left(left_entry) => {
-                trace!("missing entry in right dir");
-                if left_entry.is_dir() {
-                    let entry_list = list_files(&left_entry);
-                    for file_path in entry_list {
-                        results.push(EitherOrBoth::Left(file_path));
+                trace!("handling EitherOrBoth::Left");
+                if !options.ignore_left_only {
+                    if left_entry.is_dir() {
+                        let entry_list = list_files(&left_entry);
+                        for file_path in entry_list {
+                            results.push(EitherOrBoth::Left(file_path));
+                        }
+                        continue;
                     }
-                    continue;
-                }
-                if left_entry.is_file() {
-                    results.push(EitherOrBoth::Left(left_entry));
-                    continue;
-                }
-                if left_entry.is_symlink() {
-                    //ignore
-                    continue;
+                    if left_entry.is_file() {
+                        results.push(EitherOrBoth::Left(left_entry));
+                        continue;
+                    }
+                    if left_entry.is_symlink() {
+                        //ignore
+                        continue;
+                    }
                 }
             }
             EitherOrBoth::Right(right_entry) => {
-                trace!("extra entry in right dir");
-                if right_entry.is_dir() {
-                    let entry_list = list_files(&right_entry);
-                    for file_path in entry_list {
-                        results.push(EitherOrBoth::Right(file_path));
+                trace!("handling EitherOrBoth::Right");
+                if !options.ignore_right_only {
+                    if right_entry.is_dir() {
+                        let entry_list = list_files(&right_entry);
+                        for file_path in entry_list {
+                            results.push(EitherOrBoth::Right(file_path));
+                        }
+                        continue;
                     }
-                    continue;
-                }
-                if right_entry.is_file() {
-                    results.push(EitherOrBoth::Right(right_entry));
-                    continue;
-                }
-                if right_entry.is_symlink() {
-                    //ignore
-                    continue;
+                    if right_entry.is_file() {
+                        results.push(EitherOrBoth::Right(right_entry));
+                        continue;
+                    }
+                    if right_entry.is_symlink() {
+                        //ignore
+                        continue;
+                    }
                 }
             }
         }
     }
     Ok(results)
+}
+
+#[cfg(test)]
+mod tests_compare_dirs_inner {
+    use super::*;
+    use std::fs;
+
+    fn init_logger() {
+        let _ = env_logger::builder().is_test(true).try_init();
+    }
+
+    #[test]
+    fn no_restictions() {
+        init_logger();
+        //prepare left dir
+        let left_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_left_both = left_dir.path().join("both.txt");
+        fs::write(file_left_both.as_path(), b"Left and Right").unwrap();
+        let file_left_only = left_dir.path().join("left_only.txt");
+        fs::write(file_left_only.as_path(), b"Lefty left").unwrap();
+
+        //prepare right dir
+        let right_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_right_both = right_dir.path().join("both.txt");
+        fs::write(file_right_both.as_path(), b"Right and Left").unwrap();
+        let file_right_only = right_dir.path().join("right_only.txt");
+        fs::write(file_right_only.as_path(), b"Righty right").unwrap();
+
+        //create options without any restrictions
+        let diff_options = Options {
+            ignore_left_only: false,
+            ignore_right_only: false,
+            filter: None,
+            ignore_equal: false,
+        };
+
+        let expected: Vec<EitherOrBoth> = vec![
+            EitherOrBoth::Left(file_left_only.as_path().to_path_buf()),
+            EitherOrBoth::Both(
+                file_left_both.as_path().to_path_buf(),
+                file_right_both.as_path().to_path_buf(),
+            ),
+            EitherOrBoth::Right(file_right_only.as_path().to_path_buf()),
+        ];
+
+        //compare
+        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn ignore_equal() {
+        init_logger();
+        //prepare left dir
+        let left_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_left_both = left_dir.path().join("both.txt");
+        fs::write(file_left_both.as_path(), b"Left and Right").unwrap();
+        let file_left_only = left_dir.path().join("left_only.txt");
+        fs::write(file_left_only.as_path(), b"Lefty left").unwrap();
+
+        //prepare right dir
+        let right_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_right_both = right_dir.path().join("both.txt");
+        fs::write(file_right_both.as_path(), b"Right and Left").unwrap();
+        let file_right_only = right_dir.path().join("right_only.txt");
+        fs::write(file_right_only.as_path(), b"Righty right").unwrap();
+
+        //create options without any restrictions
+        let diff_options = Options {
+            ignore_equal: true,
+            ignore_left_only: false,
+            ignore_right_only: false,
+            filter: None,
+        };
+
+        let expected: Vec<EitherOrBoth> = vec![
+            EitherOrBoth::Left(file_left_only.as_path().to_path_buf()),
+            EitherOrBoth::Right(file_right_only.as_path().to_path_buf()),
+        ];
+
+        //compare
+        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn ignore_left_only() {
+        init_logger();
+        //prepare left dir
+        let left_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_left_both = left_dir.path().join("both.txt");
+        fs::write(file_left_both.as_path(), b"Left and Right").unwrap();
+        let file_left_only = left_dir.path().join("left_only.txt");
+        fs::write(file_left_only.as_path(), b"Lefty left").unwrap();
+
+        //prepare right dir
+        let right_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_right_both = right_dir.path().join("both.txt");
+        fs::write(file_right_both.as_path(), b"Right and Left").unwrap();
+        let file_right_only = right_dir.path().join("right_only.txt");
+        fs::write(file_right_only.as_path(), b"Righty right").unwrap();
+
+        //create options without any restrictions
+        let diff_options = Options {
+            ignore_equal: false,
+            ignore_left_only: true,
+            ignore_right_only: false,
+            filter: None,
+        };
+
+        let expected: Vec<EitherOrBoth> = vec![
+            EitherOrBoth::Both(
+                file_left_both.as_path().to_path_buf(),
+                file_right_both.as_path().to_path_buf(),
+            ),
+            EitherOrBoth::Right(file_right_only.as_path().to_path_buf()),
+        ];
+
+        //compare
+        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn ignore_right_only() {
+        init_logger();
+        //prepare left dir
+        let left_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_left_both = left_dir.path().join("both.txt");
+        fs::write(file_left_both.as_path(), b"Left and Right").unwrap();
+        let file_left_only = left_dir.path().join("left_only.txt");
+        fs::write(file_left_only.as_path(), b"Lefty left").unwrap();
+
+        //prepare right dir
+        let right_dir = tempfile::Builder::new().tempdir().unwrap();
+        let file_right_both = right_dir.path().join("both.txt");
+        fs::write(file_right_both.as_path(), b"Right and Left").unwrap();
+        let file_right_only = right_dir.path().join("right_only.txt");
+        fs::write(file_right_only.as_path(), b"Righty right").unwrap();
+
+        //create options without any restrictions
+        let diff_options = Options {
+            ignore_equal: false,
+            ignore_left_only: false,
+            ignore_right_only: true,
+            filter: None,
+        };
+
+        let expected: Vec<EitherOrBoth> = vec![
+            EitherOrBoth::Left(file_left_only.as_path().to_path_buf()),
+            EitherOrBoth::Both(
+                file_left_both.as_path().to_path_buf(),
+                file_right_both.as_path().to_path_buf(),
+            ),
+        ];
+
+        //compare
+        let result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+
+        assert_eq!(result, expected);
+    }
 }
 
 pub fn compare_dirs(
