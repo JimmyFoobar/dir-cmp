@@ -280,7 +280,6 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: true,
             filter: None,
-            
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![
@@ -303,7 +302,6 @@ mod tests_compare_dirs_inner {
         assert_eq!(result.sort(), expected.sort());
     }
 }
-
 
 pub fn compare_dirs(
     left_path: &Path,
