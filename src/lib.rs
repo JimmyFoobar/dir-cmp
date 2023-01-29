@@ -1,5 +1,5 @@
 pub mod full;
-mod light;
+pub mod light;
 
 use regex::Regex;
 use std::fs;
