@@ -1,6 +1,6 @@
 use std::fs;
 
-use dir_cmp::full::{compare_dirs, Options};
+use dir_cmp::{full::compare_dirs, Options};
 
 fn main() {
     //prepare left dir

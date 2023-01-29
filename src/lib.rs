@@ -295,6 +295,13 @@ fn list_files(path: &PathBuf) -> Vec<PathBuf> {
     result
 }
 
+pub struct Options {
+    pub ignore_left_only: bool,
+    pub ignore_right_only: bool,
+    pub ignore_equal: bool,
+    pub filter: Option<Filter>,
+}
+
 #[derive(PartialEq, Eq, Debug)]
 pub enum FileCompResult {
     Equal,

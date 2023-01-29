@@ -2,14 +2,9 @@ use log::{debug, error, trace};
 use std::path::Path;
 use std::{io, path::PathBuf};
 
-use crate::{compare_two_files, list_files, zip_dir_entries, EitherOrBoth, FileCompResult, Filter};
-
-pub struct Options {
-    pub ignore_left_only: bool,
-    pub ignore_right_only: bool,
-    pub ignore_equal: bool,
-    pub filter: Option<Filter>,
-}
+use crate::{
+    compare_two_files, list_files, zip_dir_entries, EitherOrBoth, FileCompResult, Options,
+};
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum DirCompEntry {
