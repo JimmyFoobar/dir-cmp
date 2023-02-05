@@ -123,10 +123,11 @@ mod tests_compare_dirs_inner {
 
         //create options without any restrictions
         let diff_options = Options {
+            ignore_equal: false,
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
-            ignore_equal: false,
+            recusive: false,
         };
 
         let expected: Vec<EitherOrBoth> = vec![
@@ -167,6 +168,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
+            recusive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![
@@ -203,6 +205,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: true,
             ignore_right_only: false,
             filter: None,
+            recusive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![
@@ -242,6 +245,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: true,
             filter: None,
+            recusive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![

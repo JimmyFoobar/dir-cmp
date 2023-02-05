@@ -296,10 +296,11 @@ fn list_files(path: &PathBuf) -> Vec<PathBuf> {
 }
 
 pub struct Options {
+    pub ignore_equal: bool,
     pub ignore_left_only: bool,
     pub ignore_right_only: bool,
-    pub ignore_equal: bool,
     pub filter: Option<Filter>,
+    pub recusive: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]

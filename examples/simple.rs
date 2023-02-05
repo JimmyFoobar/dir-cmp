@@ -19,10 +19,11 @@ fn main() {
 
     //create options without any restrictions
     let diff_options = Options {
+        ignore_equal: false,
         ignore_left_only: false,
         ignore_right_only: false,
         filter: None,
-        ignore_equal: false,
+        recusive: false,
     };
 
     //compare
