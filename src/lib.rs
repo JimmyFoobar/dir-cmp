@@ -1,6 +1,7 @@
 pub mod full;
 pub mod light;
 
+//use log::debug;
 use regex::Regex;
 use std::fs;
 use std::{io, path::PathBuf};
@@ -137,8 +138,7 @@ fn zip_dir_entries(
         if !apply_filter(right_short_path.to_str().unwrap(), filter) {
             let mut found_match = None;
             for left_entry in &left_entries {
-                let left_parent = left_entry.as_path().parent().unwrap().display().to_string();
-                let left_short_path = left_entry.strip_prefix(left_parent).unwrap();
+                let left_short_path = left_entry.strip_prefix(left_base).unwrap();
                 if left_short_path == right_short_path {
                     found_match = Some(());
                 }
@@ -215,6 +215,29 @@ mod tests_zip_dir_entries {
             &None,
         )
         .unwrap();
+
+        assert_eq!(result, vec![EitherOrBoth::Both(left_file, right_file)]);
+    }
+
+    #[test]
+    fn both_subdir() {
+        init();
+        let left_dir = create_temp_dir();
+        let left_sub_dir = left_dir.path().join("subdir");
+        fs::create_dir(left_sub_dir.as_path()).unwrap();
+        let left_file = left_sub_dir.as_path().join("file1");
+        fs::write(left_file.as_path(), b"Hello, world!").unwrap();
+        let left_base = left_dir.path().to_str().unwrap();
+
+        let right_dir = create_temp_dir();
+        let right_sub_dir = right_dir.path().join("subdir");
+        fs::create_dir(right_sub_dir.as_path()).unwrap();
+        let right_file = right_sub_dir.as_path().join("file1");
+        fs::write(right_file.as_path(), b"Hello, world!").unwrap();
+        let right_base = right_dir.path().to_str().unwrap();
+
+        let result =
+            zip_dir_entries(&left_sub_dir, &right_sub_dir, left_base, right_base, &None).unwrap();
 
         assert_eq!(result, vec![EitherOrBoth::Both(left_file, right_file)]);
     }
