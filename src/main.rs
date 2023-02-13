@@ -17,6 +17,10 @@ struct Cli {
     #[arg(short, long)]
     recursive: bool,
 
+    /// show identical files
+    #[arg(short)]
+    show_same: bool,
+
 }
 
 fn main() {
@@ -26,7 +30,7 @@ fn main() {
 
     //create options without any restrictions
     let diff_options = Options {
-        ignore_equal: false,
+        ignore_equal: !cli.show_same,
         ignore_left_only: false,
         ignore_right_only: false,
         filter: None,
