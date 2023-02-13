@@ -11,6 +11,7 @@ serde = "1"
 serde_derive = "1"
 regex = "1"
 clap = {version ="4.1.4", features = ["derive"]}
+env_logger = "*"
 
 [dev-dependencies]
 tempfile = "3"
