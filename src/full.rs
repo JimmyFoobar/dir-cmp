@@ -46,7 +46,7 @@ fn compare_dirs_inner(
 
                 //handle two dirs
                 if left_entry.is_dir() && right_entry.is_dir() {
-                    if options.recusive {
+                    if options.recursive {
                         let subtree_results = compare_dirs_inner(
                             left_entry.as_path(),
                             right_entry.as_path(),
@@ -145,7 +145,7 @@ mod tests_compare_dirs_inner {
             ignore_right_only: false,
             filter: None,
             ignore_equal: false,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![
@@ -195,7 +195,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![
@@ -241,7 +241,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: true,
             ignore_right_only: false,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![
@@ -291,7 +291,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: true,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![
@@ -316,7 +316,7 @@ mod tests_compare_dirs_inner {
     }
 
     #[test]
-    fn recusive_false() {
+    fn recursive_false() {
         init_logger();
         //prepare left dir
         let left_dir = tempfile::Builder::new().tempdir().unwrap();
@@ -346,7 +346,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![DirCmpEntry::Both(
@@ -362,7 +362,7 @@ mod tests_compare_dirs_inner {
     }
 
     #[test]
-    fn recusive_true() {
+    fn recursive_true() {
         init_logger();
         //prepare left dir
         let left_dir = tempfile::Builder::new().tempdir().unwrap();
@@ -392,7 +392,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
-            recusive: true,
+            recursive: true,
         };
 
         let mut expected: Vec<DirCmpEntry> = vec![

@@ -323,7 +323,7 @@ pub struct Options {
     pub ignore_left_only: bool,
     pub ignore_right_only: bool,
     pub filter: Option<Filter>,
-    pub recusive: bool,
+    pub recursive: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]

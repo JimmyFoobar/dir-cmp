@@ -23,7 +23,7 @@ fn main() {
         ignore_left_only: false,
         ignore_right_only: false,
         filter: None,
-        recusive: false,
+        recursive: false,
     };
 
     //compare

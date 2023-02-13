@@ -127,7 +127,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![
@@ -168,7 +168,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: false,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![
@@ -205,7 +205,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: true,
             ignore_right_only: false,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![
@@ -245,7 +245,7 @@ mod tests_compare_dirs_inner {
             ignore_left_only: false,
             ignore_right_only: true,
             filter: None,
-            recusive: false,
+            recursive: false,
         };
 
         let mut expected: Vec<EitherOrBoth> = vec![

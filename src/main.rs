@@ -20,7 +20,7 @@ fn main() {
         ignore_left_only: false,
         ignore_right_only: false,
         filter: None,
-        recusive: false,
+        recursive: false,
     };
 
     let result = compare_dirs(&cli.left, &cli.right, diff_options).unwrap();
