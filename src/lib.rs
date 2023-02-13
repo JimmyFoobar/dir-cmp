@@ -6,6 +6,7 @@ use regex::Regex;
 use std::fs;
 use std::{io, path::PathBuf};
 
+#[derive(Debug)]
 pub enum Filter {
     Exclude(Vec<Regex>),
     Include(Vec<Regex>),
@@ -318,6 +319,7 @@ fn list_files(path: &PathBuf) -> Vec<PathBuf> {
     result
 }
 
+#[derive(Debug)]
 pub struct Options {
     pub ignore_equal: bool,
     pub ignore_left_only: bool,
