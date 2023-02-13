@@ -9,6 +9,7 @@ This Rust library aims to provide convient functions to compare to two file tree
         ignore_right_only: false,
         filter: None,
         ignore_equal: false,
+        recusive: true,
     };
 
     //get dirs to compare
@@ -34,6 +35,7 @@ A filter consists of a list of regular expressions.
         ignore_right_only: false,
         filter: Some(filter),
         ignore_equal: false,
+        recusive: true,
     };
 
     //get dirs to compare
