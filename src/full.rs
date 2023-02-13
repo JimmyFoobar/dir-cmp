@@ -344,7 +344,7 @@ mod tests_compare_dirs_inner {
         let diff_options = Options {
             ignore_equal: false,
             ignore_left_only: false,
-            ignore_right_only: true,
+            ignore_right_only: false,
             filter: None,
             recusive: false,
         };
@@ -354,6 +354,61 @@ mod tests_compare_dirs_inner {
             right_sub_dir.as_path().to_path_buf(),
             FileCompResult::Equal,
         )];
+        expected.sort();
+        //compare
+        let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
+        result.sort();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn recusive_true() {
+        init_logger();
+        //prepare left dir
+        let left_dir = tempfile::Builder::new().tempdir().unwrap();
+        let left_sub_dir = left_dir.path().join("subdir");
+        fs::create_dir(left_sub_dir.as_path()).unwrap();
+        let file_left_both_equal = left_sub_dir.join("both_equal.txt");
+        fs::write(file_left_both_equal.as_path(), b"same same").unwrap();
+        let file_left_both_diff = left_sub_dir.join("both_diff.txt");
+        fs::write(file_left_both_diff.as_path(), b"differnt").unwrap();
+        let file_left_only = left_sub_dir.join("left_only.txt");
+        fs::write(file_left_only.as_path(), b"Lefty left").unwrap();
+
+        //prepare right dir
+        let right_dir = tempfile::Builder::new().tempdir().unwrap();
+        let right_sub_dir = right_dir.path().join("subdir");
+        fs::create_dir(right_sub_dir.as_path()).unwrap();
+        let file_right_both_equal = right_sub_dir.join("both_equal.txt");
+        fs::write(file_right_both_equal.as_path(), b"same same").unwrap();
+        let file_right_both_diff = right_sub_dir.join("both_diff.txt");
+        fs::write(file_right_both_diff.as_path(), b"more different").unwrap();
+        let file_right_only = right_sub_dir.join("right_only.txt");
+        fs::write(file_right_only.as_path(), b"Righty right").unwrap();
+
+        //create options without any restrictions
+        let diff_options = Options {
+            ignore_equal: false,
+            ignore_left_only: false,
+            ignore_right_only: false,
+            filter: None,
+            recusive: true,
+        };
+
+        let mut expected: Vec<DirCmpEntry> = vec![
+            DirCmpEntry::Left(file_left_only.as_path().to_path_buf()),
+            DirCmpEntry::Both(
+                file_left_both_diff.as_path().to_path_buf(),
+                file_right_both_diff.as_path().to_path_buf(),
+                FileCompResult::Different,
+            ),
+            DirCmpEntry::Both(
+                file_left_both_equal.as_path().to_path_buf(),
+                file_right_both_equal.as_path().to_path_buf(),
+                FileCompResult::Equal,
+            ),
+            DirCmpEntry::Right(file_right_only.as_path().to_path_buf()),
+        ];
         expected.sort();
         //compare
         let mut result = compare_dirs(left_dir.path(), right_dir.path(), diff_options).unwrap();
