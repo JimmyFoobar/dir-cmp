@@ -20,7 +20,6 @@ struct Cli {
     /// show identical files
     #[arg(short)]
     show_same: bool,
-
 }
 
 fn main() {
